@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Reading, CsvReading } from "@/types/calculator";
+import { Reading } from "@/types/calculator";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { History as HistoryIcon, Upload, Zap } from "lucide-react";
 
 export default function History() {
   const readings = JSON.parse(localStorage.getItem("readings") || "[]") as Reading[];
@@ -48,9 +49,12 @@ export default function History() {
   };
 
   return (
-    <Card className="p-6 max-w-4xl mx-auto">
+    <Card className="glass-card p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Charging History</h2>
+        <div className="flex items-center gap-3">
+          <HistoryIcon className="w-8 h-8 text-[#9b87f5]" />
+          <h2 className="text-2xl font-bold futuristic-gradient">Charging History</h2>
+        </div>
         <div>
           <Input
             type="file"
@@ -62,7 +66,9 @@ export default function History() {
           <Button
             variant="outline"
             onClick={() => document.getElementById("csv-upload")?.click()}
+            className="glass-card hover:bg-white/20"
           >
+            <Upload className="w-4 h-4 mr-2" />
             Import CSV
           </Button>
         </div>
@@ -71,7 +77,7 @@ export default function History() {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b">
+            <tr className="border-b border-white/10">
               <th className="text-left p-2">Date</th>
               <th className="text-right p-2">Current Reading</th>
               <th className="text-right p-2">Previous Reading</th>
@@ -81,7 +87,7 @@ export default function History() {
           </thead>
           <tbody>
             {readings.map((reading) => (
-              <tr key={reading.id} className="border-b">
+              <tr key={reading.id} className="border-b border-white/10">
                 <td className="p-2">
                   {new Date(reading.date).toLocaleDateString()}
                 </td>

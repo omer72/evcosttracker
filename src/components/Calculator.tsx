@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Calculator as CalcIcon, Zap, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { AdditionalCharge, Reading } from "@/types/calculator";
 import { v4 as uuidv4 } from "uuid";
@@ -65,37 +65,49 @@ export default function Calculator() {
   };
 
   return (
-    <Card className="p-6 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">EV Charging Calculator</h2>
+    <Card className="glass-card p-6 max-w-2xl mx-auto">
+      <div className="flex items-center gap-3 mb-6">
+        <CalcIcon className="w-8 h-8 text-[#9b87f5]" />
+        <h2 className="text-2xl font-bold futuristic-gradient">EV Charging Calculator</h2>
+      </div>
       
       <div className="space-y-4">
         <div>
-          <Label htmlFor="currentReading">Current Meter Reading</Label>
+          <Label htmlFor="currentReading" className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-[#9b87f5]" />
+            Current Meter Reading
+          </Label>
           <Input
             id="currentReading"
             type="number"
             value={currentReading}
             onChange={(e) => setCurrentReading(Number(e.target.value))}
-            className="mt-1"
+            className="mt-1 glass-card bg-transparent"
           />
         </div>
 
         <div>
-          <Label htmlFor="pricePerKwh">Price per kWh (₪)</Label>
+          <Label htmlFor="pricePerKwh" className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-[#9b87f5]" />
+            Price per kWh (₪)
+          </Label>
           <Input
             id="pricePerKwh"
             type="number"
             value={pricePerKwh}
             onChange={(e) => setPricePerKwh(Number(e.target.value))}
-            className="mt-1"
+            className="mt-1 glass-card bg-transparent"
             step="0.01"
           />
         </div>
 
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <Label>Additional Charges</Label>
-            <Button onClick={handleAddCharge} variant="outline" size="sm">
+            <Label className="flex items-center gap-2">
+              <PlusCircle className="w-4 h-4 text-[#9b87f5]" />
+              Additional Charges
+            </Label>
+            <Button onClick={handleAddCharge} variant="outline" size="sm" className="glass-card hover:bg-white/20">
               <Plus className="w-4 h-4 mr-1" /> Add Charge
             </Button>
           </div>
@@ -106,21 +118,21 @@ export default function Calculator() {
                 placeholder="Description"
                 value={charge.description}
                 onChange={(e) => handleChargeUpdate(charge.id, "description", e.target.value)}
-                className="flex-grow"
+                className="flex-grow glass-card bg-transparent"
               />
               <Input
                 type="number"
                 placeholder="Amount"
                 value={charge.amount}
                 onChange={(e) => handleChargeUpdate(charge.id, "amount", e.target.value)}
-                className="w-32"
+                className="w-32 glass-card bg-transparent"
                 step="0.01"
               />
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleRemoveCharge(charge.id)}
-                className="text-red-500"
+                className="text-red-500 hover:text-red-400"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -128,7 +140,8 @@ export default function Calculator() {
           ))}
         </div>
 
-        <Button onClick={calculateCost} className="w-full">
+        <Button onClick={calculateCost} className="w-full bg-[#9b87f5] hover:bg-[#8B5CF6]">
+          <CalcIcon className="w-4 h-4 mr-2" />
           Calculate Cost
         </Button>
       </div>
