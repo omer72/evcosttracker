@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, X, Calculator as CalcIcon, Zap, PlusCircle, Car } from "lucide-react";
+import { Calculator as CalcIcon } from "lucide-react";
 import { toast } from "sonner";
 import { AdditionalCharge } from "@/types/calculator";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "@/integrations/supabase/client";
+import CarSelector from "./calculator/CarSelector";
+import MeterReadings from "./calculator/MeterReadings";
+import AdditionalCharges from "./calculator/AdditionalCharges";
 
 export default function Calculator() {
   const [currentReading, setCurrentReading] = useState<number>(0);
@@ -65,7 +65,6 @@ export default function Calculator() {
       return;
     }
 
-    // Get the previous reading from Supabase
     const { data: previousReadings } = await supabase
       .from("charging_history")
       .select("current_reading")
@@ -85,7 +84,6 @@ export default function Calculator() {
     const additionalCost = additionalCharges.reduce((sum, charge) => sum + charge.amount, 0);
     const totalAmount = basicCost + additionalCost;
 
-    // Store the reading in Supabase
     const { data: historyEntry, error: historyError } = await supabase
       .from("charging_history")
       .insert([{
@@ -103,7 +101,6 @@ export default function Calculator() {
       return;
     }
 
-    // Store additional charges
     if (additionalCharges.length > 0) {
       const { error: chargesError } = await supabase
         .from("additional_charges")
@@ -142,92 +139,26 @@ export default function Calculator() {
       </div>
       
       <div className="space-y-4">
-        <div>
-          <Label htmlFor="carSelect" className="flex items-center gap-2">
-            <Car className="w-4 h-4 text-[#9b87f5]" />
-            Select Car
-          </Label>
-          <Select value={selectedCar} onValueChange={setSelectedCar}>
-            <SelectTrigger className="mt-1 glass-card bg-transparent">
-              <SelectValue placeholder="Select a car" />
-            </SelectTrigger>
-            <SelectContent>
-              {cars.map((car) => (
-                <SelectItem key={car.id} value={car.id}>
-                  {car.car_number}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <CarSelector
+          selectedCar={selectedCar}
+          onCarSelect={setSelectedCar}
+          cars={cars}
+        />
 
-        <div>
-          <Label htmlFor="currentReading" className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-[#9b87f5]" />
-            Current Meter Reading
-          </Label>
-          <Input
-            id="currentReading"
-            type="number"
-            value={currentReading}
-            onChange={(e) => setCurrentReading(Number(e.target.value))}
-            className="mt-1 glass-card bg-transparent"
-          />
-        </div>
+        <MeterReadings
+          selectedCar={selectedCar}
+          currentReading={currentReading}
+          onCurrentReadingChange={setCurrentReading}
+          pricePerKwh={pricePerKwh}
+          onPricePerKwhChange={setPricePerKwh}
+        />
 
-        <div>
-          <Label htmlFor="pricePerKwh" className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-[#9b87f5]" />
-            Price per kWh (₪)
-          </Label>
-          <Input
-            id="pricePerKwh"
-            type="number"
-            value={pricePerKwh}
-            onChange={(e) => setPricePerKwh(Number(e.target.value))}
-            className="mt-1 glass-card bg-transparent"
-            step="0.01"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <Label className="flex items-center gap-2">
-              <PlusCircle className="w-4 h-4 text-[#9b87f5]" />
-              Additional Charges
-            </Label>
-            <Button onClick={handleAddCharge} variant="outline" size="sm" className="glass-card hover:bg-white/20">
-              <Plus className="w-4 h-4 mr-1" /> Add Charge
-            </Button>
-          </div>
-
-          {additionalCharges.map((charge) => (
-            <div key={charge.id} className="flex gap-2 items-start">
-              <Input
-                placeholder="Description"
-                value={charge.description}
-                onChange={(e) => handleChargeUpdate(charge.id, "description", e.target.value)}
-                className="flex-grow glass-card bg-transparent"
-              />
-              <Input
-                type="number"
-                placeholder="Amount"
-                value={charge.amount}
-                onChange={(e) => handleChargeUpdate(charge.id, "amount", e.target.value)}
-                className="w-32 glass-card bg-transparent"
-                step="0.01"
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleRemoveCharge(charge.id)}
-                className="text-red-500 hover:text-red-400"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          ))}
-        </div>
+        <AdditionalCharges
+          charges={additionalCharges}
+          onChargeAdd={handleAddCharge}
+          onChargeRemove={handleRemoveCharge}
+          onChargeUpdate={handleChargeUpdate}
+        />
 
         <Button onClick={calculateCost} className="w-full bg-[#9b87f5] hover:bg-[#8B5CF6]">
           <CalcIcon className="w-4 h-4 mr-2" />
