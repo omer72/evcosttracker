@@ -4,6 +4,16 @@ import { useState } from "react";
 import EditHistoryDialog from "./EditHistoryDialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface HistoryTableProps {
   readings: any[];
@@ -13,6 +23,7 @@ interface HistoryTableProps {
 
 export default function HistoryTable({ readings, onDelete, onUpdate }: HistoryTableProps) {
   const [editingReading, setEditingReading] = useState<any>(null);
+  const [readingToDelete, setReadingToDelete] = useState<any>(null);
 
   const handleDelete = async (readingId: string) => {
     const { error: deleteChargesError } = await supabase
@@ -37,6 +48,7 @@ export default function HistoryTable({ readings, onDelete, onUpdate }: HistoryTa
 
     toast.success("Reading deleted successfully");
     onDelete(readingId);
+    setReadingToDelete(null);
   };
 
   return (
@@ -82,7 +94,7 @@ export default function HistoryTable({ readings, onDelete, onUpdate }: HistoryTa
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(reading.id)}
+                      onClick={() => setReadingToDelete(reading)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -98,6 +110,25 @@ export default function HistoryTable({ readings, onDelete, onUpdate }: HistoryTa
         onClose={() => setEditingReading(null)}
         onUpdate={onUpdate}
       />
+      <AlertDialog open={!!readingToDelete} onOpenChange={() => setReadingToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the reading
+              and all associated additional charges.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => readingToDelete && handleDelete(readingToDelete.id)}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
