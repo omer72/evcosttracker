@@ -15,11 +15,15 @@ interface EditHistoryDialogProps {
 export default function EditHistoryDialog({ reading, onClose, onUpdate }: EditHistoryDialogProps) {
   const [currentReading, setCurrentReading] = useState("");
   const [pricePerKwh, setPricePerKwh] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (reading) {
+      setIsOpen(true);
       setCurrentReading(reading.current_reading.toString());
       setPricePerKwh(reading.price_per_kwh.toString());
+    } else {
+      setIsOpen(false);
     }
   }, [reading]);
 
@@ -49,11 +53,16 @@ export default function EditHistoryDialog({ reading, onClose, onUpdate }: EditHi
 
     toast.success("Reading updated successfully");
     onUpdate();
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
     onClose();
   };
 
   return (
-    <Dialog open={!!reading} onOpenChange={() => onClose()}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Reading</DialogTitle>
@@ -82,7 +91,7 @@ export default function EditHistoryDialog({ reading, onClose, onUpdate }: EditHi
             />
           </div>
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={handleClose}>
               Cancel
             </Button>
             <Button type="submit">Save Changes</Button>
