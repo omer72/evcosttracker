@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { History as HistoryIcon, Download, FileDown, Car } from "lucide-react";
+import { History as HistoryIcon, Download, FileDown, Car, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
@@ -35,6 +35,71 @@ export default function History() {
     }
 
     setReadings(data || []);
+  };
+
+  const handleImportCSV = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const text = e.target?.result as string;
+        const rows = text.split('\n').map(row => row.split(','));
+        const headers = rows[0];
+        const data = rows.slice(1);
+
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          toast.error("Please login to import data");
+          return;
+        }
+
+        // Get user's cars
+        const { data: userCars } = await supabase
+          .from('cars')
+          .select('id, car_number')
+          .eq('user_id', session.user.id);
+
+        for (const row of data) {
+          if (row.length < 6) continue; // Skip invalid rows
+
+          const carNumber = row[1]?.trim();
+          const car = userCars?.find(c => c.car_number === carNumber);
+          
+          if (!car) {
+            toast.error(`Car ${carNumber} not found. Please add it first.`);
+            continue;
+          }
+
+          const reading = {
+            car_id: car.id,
+            user_id: session.user.id,
+            date: new Date(row[0]).toISOString(),
+            current_reading: parseFloat(row[2]),
+            previous_reading: parseFloat(row[3]),
+            price_per_kwh: parseFloat(row[4]),
+            total_amount: parseFloat(row[5])
+          };
+
+          const { error } = await supabase
+            .from('charging_history')
+            .insert([reading]);
+
+          if (error) {
+            console.error('Error importing row:', error);
+            toast.error(`Error importing reading for ${carNumber}`);
+          }
+        }
+
+        toast.success('Import completed');
+        fetchReadings();
+      } catch (error) {
+        console.error('Error parsing CSV:', error);
+        toast.error('Error parsing CSV file');
+      }
+    };
+    reader.readAsText(file);
   };
 
   const exportToCSV = () => {
@@ -96,6 +161,21 @@ export default function History() {
           <h2 className="text-2xl font-bold futuristic-gradient">Charging History</h2>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => document.getElementById('csvImport')?.click()}
+            className="glass-card hover:bg-white/20"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            Import CSV
+          </Button>
+          <input
+            type="file"
+            id="csvImport"
+            accept=".csv"
+            className="hidden"
+            onChange={handleImportCSV}
+          />
           <Button
             variant="outline"
             onClick={exportToCSV}

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Car, Plus, X } from "lucide-react";
+import { Car, Plus, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -99,9 +99,19 @@ export default function Settings() {
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <Card className="glass-card p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <Car className="w-8 h-8 text-[#9b87f5]" />
-            <h2 className="text-2xl font-bold futuristic-gradient">Car Management</h2>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <Car className="w-8 h-8 text-[#9b87f5]" />
+              <h2 className="text-2xl font-bold futuristic-gradient">Car Management</h2>
+            </div>
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/")}
+              className="hover:bg-white/10"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
           </div>
 
           <div className="flex gap-2 mb-6">
