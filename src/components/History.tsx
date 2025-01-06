@@ -5,13 +5,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import HistoryTable from "./history/HistoryTable";
 import ExportButtons from "./history/ExportButtons";
+import { useNavigate } from "react-router-dom";
 
 export default function History() {
   const [readings, setReadings] = useState<any[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchReadings();
+    checkUserAndFetchReadings();
   }, []);
+
+  const checkUserAndFetchReadings = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/login");
+      return;
+    }
+    fetchReadings();
+  };
 
   const fetchReadings = async () => {
     const { data, error } = await supabase
