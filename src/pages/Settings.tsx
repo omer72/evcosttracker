@@ -5,23 +5,39 @@ import { Card } from "@/components/ui/card";
 import { Car, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export default function Settings() {
   const [cars, setCars] = useState<Array<{ id: string; car_number: string }>>([]);
   const [newCarNumber, setNewCarNumber] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
+    checkUser();
     fetchCars();
   }, []);
 
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/login");
+      return;
+    }
+  };
+
   const fetchCars = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
     const { data, error } = await supabase
       .from("cars")
       .select("*")
+      .eq('user_id', session.user.id)
       .order("created_at", { ascending: true });
 
     if (error) {
       toast.error("Error fetching cars");
+      console.error("Error fetching cars:", error);
       return;
     }
 
@@ -34,12 +50,23 @@ export default function Settings() {
       return;
     }
 
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error("Please login to add cars");
+      navigate("/login");
+      return;
+    }
+
     const { error } = await supabase
       .from("cars")
-      .insert([{ car_number: newCarNumber }]);
+      .insert([{ 
+        car_number: newCarNumber,
+        user_id: session.user.id 
+      }]);
 
     if (error) {
       toast.error("Error adding car");
+      console.error("Error adding car:", error);
       return;
     }
 
@@ -49,13 +76,18 @@ export default function Settings() {
   };
 
   const deleteCar = async (id: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
     const { error } = await supabase
       .from("cars")
       .delete()
-      .eq("id", id);
+      .eq("id", id)
+      .eq("user_id", session.user.id);
 
     if (error) {
       toast.error("Error deleting car");
+      console.error("Error deleting car:", error);
       return;
     }
 
