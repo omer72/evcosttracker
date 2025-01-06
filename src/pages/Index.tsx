@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { CircuitBoard, LogOut, Zap } from "lucide-react";
+import { CircuitBoard, LogOut, Zap, Settings as SettingsIcon } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -22,14 +22,24 @@ const Index = () => {
             <Zap className="w-10 h-10 text-[#9b87f5]" />
             <span className="futuristic-gradient">EV Charging Calculator</span>
           </h1>
-          <Button 
-            variant="outline" 
-            onClick={handleSignOut}
-            className="glass-card hover:bg-white/20"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/settings")}
+              className="glass-card hover:bg-white/20"
+            >
+              <SettingsIcon className="w-4 h-4 mr-2" />
+              Settings
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleSignOut}
+              className="glass-card hover:bg-white/20"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
         
         <Tabs defaultValue="calculator" className="space-y-4">
