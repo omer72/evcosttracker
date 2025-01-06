@@ -32,7 +32,7 @@ export default function MeterReadings({
       .from("charging_history")
       .select("current_reading")
       .eq("car_id", selectedCar)
-      .order("created_at", { ascending: false })
+      .order("date", { ascending: false })
       .limit(1);
 
     if (data && data.length > 0) {
