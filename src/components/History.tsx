@@ -25,6 +25,12 @@ export default function History() {
   };
 
   const fetchReadings = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error("Please login to view history");
+      return;
+    }
+
     const { data, error } = await supabase
       .from("charging_history")
       .select(`
@@ -37,6 +43,7 @@ export default function History() {
           amount
         )
       `)
+      .eq('user_id', session.user.id)
       .order("date", { ascending: false });
 
     if (error) {
@@ -51,6 +58,12 @@ export default function History() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error("Please login to import data");
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
@@ -58,12 +71,6 @@ export default function History() {
         const rows = text.split('\n').map(row => row.split(','));
         const headers = rows[0];
         const data = rows.slice(1);
-
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          toast.error("Please login to import data");
-          return;
-        }
 
         const { data: userCars } = await supabase
           .from('cars')
