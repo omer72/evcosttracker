@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Calculator as CalcIcon, Zap } from "lucide-react";
+import { Calculator as CalcIcon } from "lucide-react";
 import { toast } from "sonner";
 import { AdditionalCharge } from "@/types/calculator";
 import { v4 as uuidv4 } from "uuid";
@@ -10,12 +10,7 @@ import CarSelector from "./calculator/CarSelector";
 import MeterReadings from "./calculator/MeterReadings";
 import AdditionalCharges from "./calculator/AdditionalCharges";
 import { useNavigate } from "react-router-dom";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import CalculationResultDialog from "./calculator/CalculationResultDialog";
 
 export default function Calculator() {
   const [currentReading, setCurrentReading] = useState<number>(0);
@@ -165,6 +160,7 @@ export default function Calculator() {
       }
     }
     
+    // Reset form and refresh meter readings
     setAdditionalCharges([]);
     setCurrentReading(0);
   };
@@ -220,42 +216,11 @@ export default function Calculator() {
         </div>
       </Card>
 
-      <Dialog open={showResult} onOpenChange={handleCloseResult}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center">Calculation Result</DialogTitle>
-          </DialogHeader>
-          {calculationResult && (
-            <div className="space-y-4 py-4">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-[#9b87f5] mb-4">
-                  ₪{calculationResult.totalAmount.toFixed(2)}
-                </div>
-                <div className="text-sm text-muted-foreground">Total Amount</div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="space-y-1">
-                  <div className="font-medium">Consumption</div>
-                  <div className="text-muted-foreground">{calculationResult.consumption} kWh</div>
-                </div>
-                <div className="space-y-1">
-                  <div className="font-medium">Basic Cost</div>
-                  <div className="text-muted-foreground">₪{calculationResult.basicCost.toFixed(2)}</div>
-                </div>
-                {calculationResult.additionalCost > 0 && (
-                  <>
-                    <div className="space-y-1">
-                      <div className="font-medium">Additional Charges</div>
-                      <div className="text-muted-foreground">₪{calculationResult.additionalCost.toFixed(2)}</div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <CalculationResultDialog
+        open={showResult}
+        onOpenChange={handleCloseResult}
+        result={calculationResult}
+      />
     </>
   );
 }

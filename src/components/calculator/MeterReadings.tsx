@@ -25,7 +25,7 @@ export default function MeterReadings({
     if (selectedCar) {
       fetchLastReading();
     }
-  }, [selectedCar]);
+  }, [selectedCar, currentReading]); // Added currentReading as dependency
 
   const fetchLastReading = async () => {
     const { data } = await supabase
