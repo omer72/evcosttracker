@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import HistoryTable from "./history/HistoryTable";
+import { History as HistoryIcon } from "lucide-react";
 import ExportButtons from "./history/ExportButtons";
 import YearlyChart from "./history/YearlyChart";
 import { toast } from "sonner";
@@ -87,9 +89,16 @@ export default function History() {
   };
 
   return (
-    <div className="space-y-6">
-      {/*<YearlyChart />*/}
-      <div className="flex justify-end">
+    <Card className="glass-card p-6 max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-3">
+          <HistoryIcon className="w-8 h-8 text-[#9b87f5]" />
+          <h2 className="text-2xl font-bold futuristic-gradient">Charging History</h2>
+        </div>
+    
+
+      {/* <YearlyChart /> */}
+
         <ExportButtons readings={readings} onImport={handleImport} />
       </div>
       <HistoryTable
@@ -97,6 +106,6 @@ export default function History() {
         onDelete={handleDelete}
         onUpdate={fetchReadings}
       />
-    </div>
+    </Card>
   );
 }
