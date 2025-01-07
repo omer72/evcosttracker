@@ -94,7 +94,7 @@ export default function Calculator() {
       .select("current_reading")
       .eq("car_id", selectedCar)
       .eq("user_id", session.user.id)
-      .order("date", { ascending: false })
+      .order("created_at", { ascending: false })
       .limit(1);
 
     const previousReading = previousReadings && previousReadings[0] ? previousReadings[0].current_reading : 0;
