@@ -7,46 +7,56 @@ import {
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 
-interface YearlyData {
-  month: string;
+interface DailyData {
+  day: string;
   total: number;
 }
 
 export default function YearlyChart() {
-  const [yearlyData, setYearlyData] = useState<YearlyData[]>([]);
+  const [monthlyData, setMonthlyData] = useState<DailyData[]>([]);
 
   useEffect(() => {
-    fetchYearlyData();
+    fetchMonthlyData();
   }, []);
 
-  const fetchYearlyData = async () => {
+  const fetchMonthlyData = async () => {
     const { data: session } = await supabase.auth.getSession();
     if (!session.session) return;
+
+    // Get the start and end of the current month
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
     const { data, error } = await supabase
       .from("charging_history")
       .select("date, total_amount")
       .eq("user_id", session.session.user.id)
-      .gte("date", new Date(new Date().getFullYear(), 0, 1).toISOString())
-      .lte("date", new Date(new Date().getFullYear(), 11, 31).toISOString());
+      .gte("date", startOfMonth.toISOString())
+      .lte("date", endOfMonth.toISOString());
 
     if (error) {
-      console.error("Error fetching yearly data:", error);
+      console.error("Error fetching monthly data:", error);
       return;
     }
 
-    const monthlyTotals = data.reduce((acc: { [key: string]: number }, curr) => {
-      const month = new Date(curr.date).toLocaleString("default", { month: "short" });
-      acc[month] = (acc[month] || 0) + Number(curr.total_amount);
+    const dailyTotals = data.reduce((acc: { [key: string]: number }, curr) => {
+      const day = new Date(curr.date).getDate().toString();
+      acc[day] = (acc[day] || 0) + Number(curr.total_amount);
       return acc;
     }, {});
 
-    const formattedData = Object.entries(monthlyTotals).map(([month, total]) => ({
-      month,
-      total: Number(total.toFixed(2)),
-    }));
+    // Create an array for all days in the month
+    const daysInMonth = endOfMonth.getDate();
+    const formattedData = Array.from({ length: daysInMonth }, (_, i) => {
+      const day = (i + 1).toString();
+      return {
+        day,
+        total: Number((dailyTotals[day] || 0).toFixed(2)),
+      };
+    });
 
-    setYearlyData(formattedData);
+    setMonthlyData(formattedData);
   };
 
   const chartConfig = {
@@ -58,21 +68,25 @@ export default function YearlyChart() {
     },
   };
 
+  const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+
   return (
     <div className="rounded-lg border bg-card p-6 shadow-sm">
-      <h3 className="font-semibold mb-4">Yearly Overview</h3>
+      <h3 className="font-semibold mb-4">{currentMonth} Overview</h3>
       <div className="h-[300px]">
         <ChartContainer config={chartConfig}>
-          <BarChart data={yearlyData}>
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip content={<ChartTooltipContent />} />
-            <Bar
-              dataKey="total"
-              fill="var(--color-total)"
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={monthlyData}>
+              <XAxis dataKey="day" />
+              <YAxis />
+              <Tooltip content={<ChartTooltipContent />} />
+              <Bar
+                dataKey="total"
+                fill="var(--color-total)"
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </div>
     </div>
