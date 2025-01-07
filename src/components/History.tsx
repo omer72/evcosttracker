@@ -88,7 +88,7 @@ export default function History() {
 
   return (
     <div className="space-y-6">
-      <YearlyChart />
+      {/*<YearlyChart />*/}
       <div className="flex justify-end">
         <ExportButtons readings={readings} onImport={handleImport} />
       </div>
