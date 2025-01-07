@@ -75,7 +75,7 @@ export default function HistoryTable({ readings, onDelete, onUpdate }: HistoryTa
                 <td className="p-2">
                   <div className="flex items-center gap-2">
                     <Car className="w-4 h-4 text-[#9b87f5]" />
-                    {reading.cars.car_number}
+                    {reading.cars?.car_number || 'Unknown Car'}
                   </div>
                 </td>
                 <td className="text-right p-2">{reading.current_reading}</td>

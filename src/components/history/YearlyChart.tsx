@@ -5,7 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 
 interface YearlyData {
   month: string;
@@ -66,14 +66,12 @@ export default function YearlyChart() {
           <BarChart data={yearlyData}>
             <XAxis dataKey="month" />
             <YAxis />
+            <Tooltip content={<ChartTooltipContent />} />
             <Bar
               dataKey="total"
               fill="var(--color-total)"
               radius={[4, 4, 0, 0]}
             />
-            <ChartTooltip>
-              <ChartTooltipContent />
-            </ChartTooltip>
           </BarChart>
         </ChartContainer>
       </div>
