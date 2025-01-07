@@ -178,7 +178,7 @@ export default function Calculator() {
         <div className="flex items-center gap-3 mb-6">
           <CalcIcon className="w-8 h-8 text-[#9b87f5]" />
           <h2 className="text-2xl font-bold futuristic-gradient">
-            EV Charging Calculator
+            EV Charging Calculator App
             {selectedCarNumber && (
               <span className="text-sm ml-2 opacity-75">
                 (Car: {selectedCarNumber})
