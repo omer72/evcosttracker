@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import CarSelector from "./calculator/CarSelector";
 import MeterReadings from "./calculator/MeterReadings";
 import AdditionalCharges from "./calculator/AdditionalCharges";
+import { useNavigate } from "react-router-dom";
 
 export default function Calculator() {
   const [currentReading, setCurrentReading] = useState<number>(0);
@@ -16,15 +17,32 @@ export default function Calculator() {
   const [additionalCharges, setAdditionalCharges] = useState<AdditionalCharge[]>([]);
   const [selectedCar, setSelectedCar] = useState<string>("");
   const [cars, setCars] = useState<Array<{ id: string; car_number: string }>>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchCars();
+    checkUserAndFetchCars();
   }, []);
 
+  const checkUserAndFetchCars = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/login");
+      return;
+    }
+    fetchCars();
+  };
+
   const fetchCars = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error("Please login to view cars");
+      return;
+    }
+
     const { data, error } = await supabase
       .from("cars")
       .select("*")
+      .eq('user_id', session.user.id)
       .order("created_at", { ascending: true });
 
     if (error) {
@@ -60,6 +78,12 @@ export default function Calculator() {
   };
 
   const calculateCost = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error("Please login to calculate cost");
+      return;
+    }
+
     if (!selectedCar) {
       toast.error("Please select a car");
       return;
@@ -69,6 +93,7 @@ export default function Calculator() {
       .from("charging_history")
       .select("current_reading")
       .eq("car_id", selectedCar)
+      .eq("user_id", session.user.id)
       .order("created_at", { ascending: false })
       .limit(1);
 
@@ -88,6 +113,7 @@ export default function Calculator() {
       .from("charging_history")
       .insert([{
         car_id: selectedCar,
+        user_id: session.user.id,
         current_reading: currentReading,
         previous_reading: previousReading,
         price_per_kwh: pricePerKwh,
@@ -120,6 +146,7 @@ export default function Calculator() {
     
     toast.success(`Calculation complete! Total amount: ₪${totalAmount.toFixed(2)}`);
     setAdditionalCharges([]);
+    setCurrentReading(0);
   };
 
   const selectedCarNumber = cars.find(car => car.id === selectedCar)?.car_number;
