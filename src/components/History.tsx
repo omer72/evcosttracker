@@ -21,6 +21,7 @@ export default function History() {
     const { data, error } = await supabase
       .from("charging_history")
       .select("*, cars(*)")
+      .order("date", {ascending:false})
       .eq("user_id", session.session.user.id);
 
     if (error) {
