@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Calculator as CalcIcon } from "lucide-react";
+import { Calculator as CalcIcon, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { AdditionalCharge } from "@/types/calculator";
 import { v4 as uuidv4 } from "uuid";
@@ -10,6 +10,12 @@ import CarSelector from "./calculator/CarSelector";
 import MeterReadings from "./calculator/MeterReadings";
 import AdditionalCharges from "./calculator/AdditionalCharges";
 import { useNavigate } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Calculator() {
   const [currentReading, setCurrentReading] = useState<number>(0);
@@ -18,6 +24,13 @@ export default function Calculator() {
   const [selectedCar, setSelectedCar] = useState<string>("");
   const [cars, setCars] = useState<Array<{ id: string; car_number: string }>>([]);
   const navigate = useNavigate();
+  const [showResult, setShowResult] = useState(false);
+  const [calculationResult, setCalculationResult] = useState<{
+    totalAmount: number;
+    consumption: number;
+    basicCost: number;
+    additionalCost: number;
+  } | null>(null);
 
   useEffect(() => {
     checkUserAndFetchCars();
@@ -109,6 +122,14 @@ export default function Calculator() {
     const additionalCost = additionalCharges.reduce((sum, charge) => sum + charge.amount, 0);
     const totalAmount = basicCost + additionalCost;
 
+    setCalculationResult({
+      totalAmount,
+      consumption,
+      basicCost,
+      additionalCost
+    });
+    setShowResult(true);
+
     const { data: historyEntry, error: historyError } = await supabase
       .from("charging_history")
       .insert([{
@@ -144,54 +165,97 @@ export default function Calculator() {
       }
     }
     
-    toast.success(`Calculation complete! Total amount: ₪${totalAmount.toFixed(2)}`);
     setAdditionalCharges([]);
     setCurrentReading(0);
+  };
+
+  const handleCloseResult = () => {
+    setShowResult(false);
+    setCalculationResult(null);
   };
 
   const selectedCarNumber = cars.find(car => car.id === selectedCar)?.car_number;
 
   return (
-    <Card className="glass-card p-6 max-w-2xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <CalcIcon className="w-8 h-8 text-[#9b87f5]" />
-        <h2 className="text-2xl font-bold futuristic-gradient">
-          EV Charging Calculator
-          {selectedCarNumber && (
-            <span className="text-sm ml-2 opacity-75">
-              (Car: {selectedCarNumber})
-            </span>
+    <>
+      <Card className="glass-card p-6 max-w-2xl mx-auto">
+        <div className="flex items-center gap-3 mb-6">
+          <CalcIcon className="w-8 h-8 text-[#9b87f5]" />
+          <h2 className="text-2xl font-bold futuristic-gradient">
+            EV Charging Calculator
+            {selectedCarNumber && (
+              <span className="text-sm ml-2 opacity-75">
+                (Car: {selectedCarNumber})
+              </span>
+            )}
+          </h2>
+        </div>
+        
+        <div className="space-y-4">
+          <CarSelector
+            selectedCar={selectedCar}
+            onCarSelect={setSelectedCar}
+            cars={cars}
+          />
+
+          <MeterReadings
+            selectedCar={selectedCar}
+            currentReading={currentReading}
+            onCurrentReadingChange={setCurrentReading}
+            pricePerKwh={pricePerKwh}
+            onPricePerKwhChange={setPricePerKwh}
+          />
+
+          <AdditionalCharges
+            charges={additionalCharges}
+            onChargeAdd={handleAddCharge}
+            onChargeRemove={handleRemoveCharge}
+            onChargeUpdate={handleChargeUpdate}
+          />
+
+          <Button onClick={calculateCost} className="w-full bg-[#9b87f5] hover:bg-[#8B5CF6]">
+            <CalcIcon className="w-4 h-4 mr-2" />
+            Calculate Cost
+          </Button>
+        </div>
+      </Card>
+
+      <Dialog open={showResult} onOpenChange={handleCloseResult}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Calculation Result</DialogTitle>
+          </DialogHeader>
+          {calculationResult && (
+            <div className="space-y-4 py-4">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-[#9b87f5] mb-4">
+                  ₪{calculationResult.totalAmount.toFixed(2)}
+                </div>
+                <div className="text-sm text-muted-foreground">Total Amount</div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-1">
+                  <div className="font-medium">Consumption</div>
+                  <div className="text-muted-foreground">{calculationResult.consumption} kWh</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="font-medium">Basic Cost</div>
+                  <div className="text-muted-foreground">₪{calculationResult.basicCost.toFixed(2)}</div>
+                </div>
+                {calculationResult.additionalCost > 0 && (
+                  <>
+                    <div className="space-y-1">
+                      <div className="font-medium">Additional Charges</div>
+                      <div className="text-muted-foreground">₪{calculationResult.additionalCost.toFixed(2)}</div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           )}
-        </h2>
-      </div>
-      
-      <div className="space-y-4">
-        <CarSelector
-          selectedCar={selectedCar}
-          onCarSelect={setSelectedCar}
-          cars={cars}
-        />
-
-        <MeterReadings
-          selectedCar={selectedCar}
-          currentReading={currentReading}
-          onCurrentReadingChange={setCurrentReading}
-          pricePerKwh={pricePerKwh}
-          onPricePerKwhChange={setPricePerKwh}
-        />
-
-        <AdditionalCharges
-          charges={additionalCharges}
-          onChargeAdd={handleAddCharge}
-          onChargeRemove={handleRemoveCharge}
-          onChargeUpdate={handleChargeUpdate}
-        />
-
-        <Button onClick={calculateCost} className="w-full bg-[#9b87f5] hover:bg-[#8B5CF6]">
-          <CalcIcon className="w-4 h-4 mr-2" />
-          Calculate Cost
-        </Button>
-      </div>
-    </Card>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
