@@ -6,13 +6,37 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { CircuitBoard, LogOut, Zap, Settings as SettingsIcon } from "lucide-react";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     checkUser();
+    fetchCars();
   }, []);
+
+  
+  const fetchCars = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { data, error } = await supabase
+      .from("cars")
+      .select("*")
+      .eq('user_id', session.user.id)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      toast.error("Error fetching cars");
+      console.error("Error fetching cars:", error);
+      return;
+    }
+
+    if(!data){
+      navigate("/settings");
+    }
+  };
 
   const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession();
