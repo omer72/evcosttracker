@@ -35,6 +35,17 @@ const Login = () => {
           appearance={{ theme: ThemeSupa }}
           providers={[]}
           theme="light"
+          localization={{
+          variables: {
+            sign_in: {
+              email_label: 'אימייל',
+              password_label: 'סיסמא',
+              link_text: "אין לך חשבון, לחצו כאן ליצור"
+            },
+            forgotten_password:{
+              link_text: "שכחת סיסמא?"
+            }
+          },
         />
       </div>
     </div>
