@@ -37,6 +37,9 @@ const Login = () => {
           theme="light"
           localization={{
           variables: {
+            sign_up: {
+              link_text: "אין לך חשבון, לחצו כאן ליצור"
+            },
             sign_in: {
               email_label: 'אימייל',
               password_label: 'סיסמא',
