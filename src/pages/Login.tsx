@@ -38,15 +38,18 @@ const Login = () => {
           localization={{
           variables: {
             sign_up: {
-              //link_text: "אין לך חשבון, לחצו כאן ליצור"
-            },
-            sign_in: {
               email_label: 'אימייל',
               password_label: 'סיסמא',
               link_text: "אין לך חשבון, לחצו כאן ליצור"
             },
+            sign_in: {
+              email_label: 'אימייל',
+              password_label: 'סיסמא',
+              link_text: "יש לך חשבון? לחצו כאן להתחברות"
+            },
             forgotten_password:{
-              link_text: "שכחת סיסמא?"
+              link_text: "שכחת סיסמא?",
+              email_label: 'אימייל',
             }
           }}}
         />
