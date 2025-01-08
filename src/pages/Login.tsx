@@ -45,7 +45,7 @@ const Login = () => {
             forgotten_password:{
               link_text: "שכחת סיסמא?"
             }
-          },
+          }}}
         />
       </div>
     </div>
