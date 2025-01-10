@@ -11,13 +11,11 @@ interface ExportButtonsProps {
 export default function ExportButtons({ readings, onImport }: ExportButtonsProps) {
   const exportToCSV = () => {
     const csvContent = [
-      ["Date", "Car Number", "Current Reading", "Previous Reading", "Price/kWh", "Total Amount"],
+      ["Date", "Current Reading", "Previous Reading", "Total Amount"],
       ...readings.map(reading => [
         new Date(reading.date).toLocaleDateString(),
-        reading.cars.car_number,
         reading.current_reading,
         reading.previous_reading,
-        reading.price_per_kwh,
         reading.total_amount
       ])
     ].map(row => row.join(",")).join("\n");
@@ -36,39 +34,44 @@ export default function ExportButtons({ readings, onImport }: ExportButtonsProps
   const exportToPDF = () => {
     const doc = new jsPDF();
     
-    doc.setFontSize(20);
-    doc.text("EV Charging History", 14, 22);
+    doc.setFontSize(16);
+    doc.text("EV Charging History", 14, 20);
 
     const tableData = readings.map(reading => [
       new Date(reading.date).toLocaleDateString(),
-      reading.cars.car_number,
       reading.current_reading.toString(),
       reading.previous_reading.toString(),
-      `₪${reading.price_per_kwh.toFixed(2)}`,
       `₪${reading.total_amount.toFixed(2)}`
     ]);
 
     (doc as any).autoTable({
-      head: [["Date", "Car Number", "Current Reading", "Previous Reading", "Price/kWh", "Total"]],
+      head: [["Date", "Current", "Previous", "Total"]],
       body: tableData,
       startY: 30,
       theme: "grid",
       styles: { fontSize: 8 },
-      headStyles: { fillColor: [155, 135, 245] }
+      headStyles: { fillColor: [155, 135, 245] },
+      columnStyles: {
+        0: { cellWidth: 'auto' },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 'auto' },
+        3: { cellWidth: 'auto' }
+      }
     });
 
     doc.save("charging-history.pdf");
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       <Button
         variant="outline"
         onClick={() => document.getElementById('csvImport')?.click()}
-        className="glass-card hover:bg-white/20"
+        className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
       >
-        <Upload className="w-4 h-4 mr-2" />
-        Import CSV
+        <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+        <span className="hidden sm:inline">Import</span>
+        <span className="sm:hidden">CSV</span>
       </Button>
       <input
         type="file"
@@ -80,18 +83,20 @@ export default function ExportButtons({ readings, onImport }: ExportButtonsProps
       <Button
         variant="outline"
         onClick={exportToCSV}
-        className="glass-card hover:bg-white/20"
+        className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
       >
-        <FileDown className="w-4 h-4 mr-2" />
-        Export CSV
+        <FileDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+        <span className="hidden sm:inline">Export</span>
+        <span className="sm:hidden">CSV</span>
       </Button>
       <Button
         variant="outline"
         onClick={exportToPDF}
-        className="glass-card hover:bg-white/20"
+        className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
       >
-        <Download className="w-4 h-4 mr-2" />
-        Export PDF
+        <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+        <span className="hidden sm:inline">Export</span>
+        <span className="sm:hidden">PDF</span>
       </Button>
     </div>
   );
