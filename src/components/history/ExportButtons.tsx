@@ -2,6 +2,17 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Download, Upload } from "lucide-react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ExportButtonsProps {
   readings: any[];
@@ -9,6 +20,27 @@ interface ExportButtonsProps {
 }
 
 export default function ExportButtons({ readings, onImport }: ExportButtonsProps) {
+  const [isImporting, setIsImporting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    try {
+      await onImport(event);
+      toast.success('Import completed successfully');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to import CSV file');
+    } finally {
+      setIsImporting(false);
+      if (event.target) {
+        event.target.value = '';
+      }
+    }
+  };
+
   const exportToCSV = () => {
     const csvContent = [
       ["Date", "Current Reading", "Previous Reading", "Total Amount"],
@@ -63,41 +95,63 @@ export default function ExportButtons({ readings, onImport }: ExportButtonsProps
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <Button
-        variant="outline"
-        onClick={() => document.getElementById('csvImport')?.click()}
-        className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
-      >
-        <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-        <span className="hidden sm:inline">Import</span>
-        <span className="sm:hidden">CSV</span>
-      </Button>
-      <input
-        type="file"
-        id="csvImport"
-        accept=".csv"
-        className="hidden"
-        onChange={onImport}
-      />
-      <Button
-        variant="outline"
-        onClick={exportToCSV}
-        className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
-      >
-        <FileDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-        <span className="hidden sm:inline">Export</span>
-        <span className="sm:hidden">CSV</span>
-      </Button>
-      <Button
-        variant="outline"
-        onClick={exportToPDF}
-        className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
-      >
-        <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-        <span className="hidden sm:inline">Export</span>
-        <span className="sm:hidden">PDF</span>
-      </Button>
-    </div>
+    <>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant="outline"
+          onClick={() => document.getElementById('csvImport')?.click()}
+          className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
+          disabled={isImporting}
+        >
+          {isImporting ? (
+            <div className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+          )}
+          <span className="hidden sm:inline">{isImporting ? 'Importing...' : 'Import'}</span>
+          <span className="sm:hidden">CSV</span>
+        </Button>
+        <input
+          type="file"
+          id="csvImport"
+          accept=".csv"
+          className="hidden"
+          onChange={handleImport}
+          disabled={isImporting}
+        />
+        <Button
+          variant="outline"
+          onClick={exportToCSV}
+          className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
+        >
+          <FileDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+          <span className="hidden sm:inline">Export</span>
+          <span className="sm:hidden">CSV</span>
+        </Button>
+        <Button
+          variant="outline"
+          onClick={exportToPDF}
+          className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
+        >
+          <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+          <span className="hidden sm:inline">Export</span>
+          <span className="sm:hidden">PDF</span>
+        </Button>
+      </div>
+
+      <AlertDialog open={!!error} onOpenChange={() => setError(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Import Error</AlertDialogTitle>
+            <AlertDialogDescription>
+              {error}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setError(null)}>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

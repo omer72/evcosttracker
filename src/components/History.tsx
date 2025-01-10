@@ -40,53 +40,51 @@ export default function History() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    try {
-      const text = await file.text();
-      const rows = text.split('\n').slice(1); // Skip header row
+    const text = await file.text();
+    const rows = text.split('\n').slice(1); // Skip header row
+    
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session) {
+      throw new Error('You must be logged in to import data');
+    }
+
+    for (const row of rows) {
+      const [date, carNumber, currentReading, previousReading, pricePerKwh, totalAmount] = row.split(',');
       
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session) return;
-
-      for (const row of rows) {
-        const [date, carNumber, currentReading, previousReading, pricePerKwh, totalAmount] = row.split(',');
-        
-        // Find car by number
-        const { data: cars } = await supabase
-          .from('cars')
-          .select('id')
-          .eq('car_number', carNumber)
-          .eq('user_id', session.session.user.id)
-          .single();
-
-        if (!cars) {
-          toast.error(`Car ${carNumber} not found`);
-          continue;
-        }
-
-        const { error } = await supabase
-          .from('charging_history')
-          .insert({
-            date: new Date(date).toISOString(),
-            car_id: cars.id,
-            user_id: session.session.user.id,
-            current_reading: Number(currentReading),
-            previous_reading: Number(previousReading),
-            price_per_kwh: Number(pricePerKwh),
-            total_amount: Number(totalAmount)
-          });
-
-        if (error) {
-          toast.error(`Error importing reading for ${carNumber}`);
-          console.error(error);
-        }
+      if (!date || !carNumber || !currentReading || !previousReading || !pricePerKwh || !totalAmount) {
+        throw new Error('Invalid CSV format. Please make sure all columns are present: Date, Car Number, Current Reading, Previous Reading, Price per kWh, Total Amount');
       }
 
-      toast.success('Import completed');
-      fetchReadings();
-    } catch (error) {
-      toast.error('Error importing CSV file');
-      console.error(error);
+      // Find car by number
+      const { data: cars, error: carError } = await supabase
+        .from('cars')
+        .select('id')
+        .eq('car_number', carNumber)
+        .eq('user_id', session.session.user.id)
+        .single();
+
+      if (carError || !cars) {
+        throw new Error(`Car ${carNumber} not found in your account`);
+      }
+
+      const { error: insertError } = await supabase
+        .from('charging_history')
+        .insert({
+          date: new Date(date).toISOString(),
+          car_id: cars.id,
+          user_id: session.session.user.id,
+          current_reading: Number(currentReading),
+          previous_reading: Number(previousReading),
+          price_per_kwh: Number(pricePerKwh),
+          total_amount: Number(totalAmount)
+        });
+
+      if (insertError) {
+        throw new Error(`Error importing reading for ${carNumber}: ${insertError.message}`);
+      }
     }
+
+    await fetchReadings();
   };
 
   return (
@@ -96,9 +94,6 @@ export default function History() {
           <HistoryIcon className="w-8 h-8 text-[#9b87f5]" />
           <h2 className="text-2xl font-bold futuristic-gradient">Charging History</h2>
         </div>
-    
-
-      {/* <YearlyChart /> */}
 
         <ExportButtons readings={readings} onImport={handleImport} />
       </div>
