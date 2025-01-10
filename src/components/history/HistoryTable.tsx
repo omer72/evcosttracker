@@ -53,57 +53,71 @@ export default function HistoryTable({ readings, onDelete, onUpdate }: HistoryTa
 
   return (
     <>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-white/10">
-              <th className="text-left p-2">Date</th>
-              <th className="text-left p-2">Car</th>
-              <th className="text-right p-2">Current Reading</th>
-              <th className="text-right p-2">Previous Reading</th>
-              <th className="text-right p-2">Price/kWh</th>
-              <th className="text-right p-2">Total Amount</th>
-              <th className="text-right p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {readings.map((reading) => (
-              <tr key={reading.id} className="border-b border-white/10">
-                <td className="p-2">
-                  {new Date(reading.date).toLocaleDateString()}
-                </td>
-                <td className="p-2">
-                  <div className="flex items-center gap-2">
-                    <Car className="w-4 h-4 text-[#9b87f5]" />
-                    {reading.cars?.car_number || 'Unknown Car'}
-                  </div>
-                </td>
-                <td className="text-right p-2">{reading.current_reading}</td>
-                <td className="text-right p-2">{reading.previous_reading}</td>
-                <td className="text-right p-2">₪{reading.price_per_kwh.toFixed(2)}</td>
-                <td className="text-right p-2">₪{reading.total_amount.toFixed(2)}</td>
-                <td className="text-right p-2">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setEditingReading(reading)}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setReadingToDelete(reading)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="min-w-full inline-block align-middle">
+          <div className="overflow-hidden">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead>
+                <tr className="text-xs sm:text-sm">
+                  <th className="px-2 py-3 text-left">Date</th>
+                  <th className="hidden sm:table-cell px-2 py-3 text-left">Car</th>
+                  <th className="px-2 py-3 text-right">Current</th>
+                  <th className="px-2 py-3 text-right">Previous</th>
+                  <th className="hidden sm:table-cell px-2 py-3 text-right">Price/kWh</th>
+                  <th className="px-2 py-3 text-right">Total</th>
+                  <th className="px-2 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/10">
+                {readings.map((reading) => (
+                  <tr key={reading.id} className="text-xs sm:text-sm">
+                    <td className="px-2 py-3 whitespace-nowrap">
+                      {new Date(reading.date).toLocaleDateString()}
+                    </td>
+                    <td className="hidden sm:table-cell px-2 py-3 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <Car className="w-4 h-4 text-[#9b87f5]" />
+                        {reading.cars?.car_number || 'Unknown Car'}
+                      </div>
+                    </td>
+                    <td className="px-2 py-3 text-right whitespace-nowrap">
+                      {reading.current_reading}
+                    </td>
+                    <td className="px-2 py-3 text-right whitespace-nowrap">
+                      {reading.previous_reading}
+                    </td>
+                    <td className="hidden sm:table-cell px-2 py-3 text-right whitespace-nowrap">
+                      ₪{reading.price_per_kwh.toFixed(2)}
+                    </td>
+                    <td className="px-2 py-3 text-right whitespace-nowrap">
+                      ₪{reading.total_amount.toFixed(2)}
+                    </td>
+                    <td className="px-2 py-3 text-right whitespace-nowrap">
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => setEditingReading(reading)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => setReadingToDelete(reading)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
       <EditHistoryDialog
         reading={editingReading}

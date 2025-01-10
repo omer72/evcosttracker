@@ -16,7 +16,6 @@ const Index = () => {
     fetchCars();
   }, []);
 
-  
   const fetchCars = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
@@ -52,29 +51,31 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className="min-h-screen py-4 px-2 sm:py-8 sm:px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold flex items-center gap-3">
-            <Zap className="w-10 h-10 text-[#9b87f5]" />
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-bold flex items-center gap-2 sm:gap-3">
+            <Zap className="w-8 h-8 sm:w-10 sm:h-10 text-[#9b87f5]" />
             <span className="futuristic-gradient">EV Charging Calculator</span>
           </h1>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto justify-end">
             <Button 
               variant="outline" 
               onClick={() => navigate("/settings")}
               className="glass-card hover:bg-white/20"
+              size="sm"
             >
               <SettingsIcon className="w-4 h-4 mr-2" />
-              Settings
+              <span className="hidden sm:inline">Settings</span>
             </Button>
             <Button 
               variant="outline" 
               onClick={handleSignOut}
               className="glass-card hover:bg-white/20"
+              size="sm"
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
+              <span className="hidden sm:inline">Sign Out</span>
             </Button>
           </div>
         </div>
