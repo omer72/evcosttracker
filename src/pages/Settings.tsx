@@ -6,10 +6,21 @@ import { Car, Plus, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function Settings() {
   const [cars, setCars] = useState<Array<{ id: string; car_number: string }>>([]);
   const [newCarNumber, setNewCarNumber] = useState("");
+  const [carToDelete, setCarToDelete] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,7 +102,8 @@ export default function Settings() {
       return;
     }
 
-    toast.success("Car deleted successfully");
+    toast.success("Car and associated history deleted successfully");
+    setCarToDelete(null);
     fetchCars();
   };
 
@@ -140,7 +152,7 @@ export default function Settings() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => deleteCar(car.id)}
+                  onClick={() => setCarToDelete(car.id)}
                   className="text-red-500 hover:text-red-400"
                 >
                   <X className="w-4 h-4" />
@@ -150,6 +162,26 @@ export default function Settings() {
           </div>
         </Card>
       </div>
+
+      <AlertDialog open={!!carToDelete} onOpenChange={() => setCarToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the car and all its associated charging history.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => carToDelete && deleteCar(carToDelete)}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
