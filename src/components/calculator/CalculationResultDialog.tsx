@@ -5,6 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { NumberFlow } from "@/components/ui/number-flow";
+import { useEffect, useState } from "react";
 
 interface CalculationResultDialogProps {
   open: boolean;
@@ -22,17 +23,38 @@ export default function CalculationResultDialog({
   onOpenChange,
   result
 }: CalculationResultDialogProps) {
+  const [displayedResult, setDisplayedResult] = useState<typeof result>(null);
+
+  useEffect(() => {
+    if (open && result) {
+      // First set all values to 0
+      setDisplayedResult({
+        totalAmount: 0,
+        consumption: 0,
+        basicCost: 0,
+        additionalCost: 0
+      });
+
+      // Then after a short delay, set the actual values
+      const timer = setTimeout(() => {
+        setDisplayedResult(result);
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [open, result]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center">Calculation Result</DialogTitle>
         </DialogHeader>
-        {result && (
+        {displayedResult && (
           <div className="space-y-4 py-4">
             <div className="text-center">
               <div className="text-4xl font-bold text-[#9b87f5] mb-4">
-                ₪<NumberFlow value={result.totalAmount} />
+                ₪<NumberFlow value={displayedResult.totalAmount} />
               </div>
               <div className="text-sm text-muted-foreground">Total Amount</div>
             </div>
@@ -41,21 +63,21 @@ export default function CalculationResultDialog({
               <div className="space-y-1">
                 <div className="font-medium">Consumption</div>
                 <div className="text-muted-foreground">
-                  <NumberFlow value={result.consumption} /> kWh
+                  <NumberFlow value={displayedResult.consumption} /> kWh
                 </div>
               </div>
               <div className="space-y-1">
                 <div className="font-medium">Basic Cost</div>
                 <div className="text-muted-foreground">
-                  ₪<NumberFlow value={result.basicCost} />
+                  ₪<NumberFlow value={displayedResult.basicCost} />
                 </div>
               </div>
-              {result.additionalCost > 0 && (
+              {displayedResult.additionalCost > 0 && (
                 <>
                   <div className="space-y-1">
                     <div className="font-medium">Additional Charges</div>
                     <div className="text-muted-foreground">
-                      ₪<NumberFlow value={result.additionalCost} />
+                      ₪<NumberFlow value={displayedResult.additionalCost} />
                     </div>
                   </div>
                 </>

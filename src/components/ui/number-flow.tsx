@@ -10,7 +10,7 @@ interface NumberFlowProps {
 export function NumberFlow({ value, className }: NumberFlowProps) {
   return (
     <div className={className}>
-      <NumberFlowBase value={value} trend={false} />
+      <NumberFlowBase value={value} trend="none" />
     </div>
   );
 }
