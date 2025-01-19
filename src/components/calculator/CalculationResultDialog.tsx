@@ -53,8 +53,9 @@ export default function CalculationResultDialog({
         {displayedResult && (
           <div className="space-y-4 py-4">
             <div className="text-center">
-              <div className="text-4xl font-bold text-[#9b87f5] mb-4">
-                ₪<NumberFlow value={displayedResult.totalAmount} />
+              <div className="text-4xl font-bold text-[#9b87f5] mb-4 flex items-center justify-center gap-0.5">
+                <span>₪</span>
+                <NumberFlow value={displayedResult.totalAmount} />
               </div>
               <div className="text-sm text-muted-foreground">Total Amount</div>
             </div>
@@ -68,16 +69,18 @@ export default function CalculationResultDialog({
               </div>
               <div className="space-y-1">
                 <div className="font-medium">Basic Cost</div>
-                <div className="text-muted-foreground">
-                  ₪<NumberFlow value={displayedResult.basicCost} />
+                <div className="text-muted-foreground flex items-center gap-0.5">
+                  <span>₪</span>
+                  <NumberFlow value={displayedResult.basicCost} />
                 </div>
               </div>
               {displayedResult.additionalCost > 0 && (
                 <>
                   <div className="space-y-1">
                     <div className="font-medium">Additional Charges</div>
-                    <div className="text-muted-foreground">
-                      ₪<NumberFlow value={displayedResult.additionalCost} />
+                    <div className="text-muted-foreground flex items-center gap-0.5">
+                      <span>₪</span>
+                      <NumberFlow value={displayedResult.additionalCost} />
                     </div>
                   </div>
                 </>
