@@ -63,8 +63,9 @@ export default function CalculationResultDialog({
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="space-y-1">
                 <div className="font-medium">Consumption</div>
-                <div className="text-muted-foreground">
-                  <NumberFlow value={displayedResult.consumption} /> kWh
+                <div className="text-muted-foreground flex items-center gap-0.5">
+                  <NumberFlow value={displayedResult.consumption} />
+                  <span>kWh</span>
                 </div>
               </div>
               <div className="space-y-1">
