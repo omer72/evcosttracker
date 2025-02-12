@@ -48,6 +48,10 @@ const Index = () => {
     navigate("/login");
   };
 
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>;
+  }
+
   if (!isAuthenticated) {
     return (
       <Hero
