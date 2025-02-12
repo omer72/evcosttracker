@@ -1,3 +1,4 @@
+
 import Calculator from "@/components/Calculator";
 import History from "@/components/History";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -5,21 +6,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { CircuitBoard, LogOut, Zap, Settings as SettingsIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Hero } from "@/components/blocks/hero";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
     checkUser();
-    fetchCars();
   }, []);
 
-  const fetchCars = async () => {
+  const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-
+    setIsAuthenticated(!!session);
+    
+    if (!session) {
+      return;
+    }
+    
     const { data, error } = await supabase
       .from("cars")
       .select("*")
@@ -37,18 +43,34 @@ const Index = () => {
     }
   };
 
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/login");
-      return;
-    }
-  };
-
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/login");
   };
+
+  if (!isAuthenticated) {
+    return (
+      <Hero
+        title="EV Charging Calculator"
+        subtitle="A web app for EV owners in shared buildings to track and manage charging costs. It automates session logging, calculates expenses, and generates Excel/PDF reports. Users can sign up, verify their email, register their vehicle, and import existing data. Simplify EV charging cost management with an easy-to-use platform. ⚡🚗"
+        actions={[
+          {
+            label: "Sign In",
+            href: "/login",
+            variant: "default"
+          },
+          {
+            label: "Sign Up",
+            href: "/login",
+            variant: "outline"
+          }
+        ]}
+        titleClassName="text-5xl md:text-6xl font-extrabold text-[#9b87f5]"
+        subtitleClassName="text-lg md:text-xl max-w-[800px]"
+        actionsClassName="mt-8"
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen py-4 px-2 sm:py-8 sm:px-4">
