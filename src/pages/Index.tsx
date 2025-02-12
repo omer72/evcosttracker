@@ -100,7 +100,7 @@ const Index = () => {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-4xl font-bold flex items-center gap-2 sm:gap-3">
             <Zap className="w-8 h-8 sm:w-10 sm:h-10 text-[#9b87f5]" />
-            <span className="futuristic-gradient">EV Charging Calculator</span>
+            <span className="futuristic-gradient">EV Cost Tracker</span>
           </h1>
           <div className="flex gap-2 w-full sm:w-auto justify-end">
             <Button 
