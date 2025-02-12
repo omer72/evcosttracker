@@ -1,4 +1,3 @@
-
 import Calculator from "@/components/Calculator";
 import History from "@/components/History";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -45,7 +44,7 @@ const Index = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate("/login");
+    navigate("/");
   };
 
   if (isAuthenticated === null) {
