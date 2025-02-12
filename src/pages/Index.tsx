@@ -73,7 +73,7 @@ const Index = () => {
   if (!isAuthenticated) {
     return (
       <Hero
-        title="EV Charging Calculator"
+        title="EV Cost Tracker"
         subtitle="A web app for EV owners in shared buildings to track and manage charging costs. It automates session logging, calculates expenses, and generates Excel/PDF reports. Users can sign up, verify their email, register their vehicle, and import existing data. Simplify EV charging cost management with an easy-to-use platform. ⚡🚗"
         actions={[
           {
