@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +21,7 @@ export default function AdditionalCharges({
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <Label className="flex items-center gap-2">
+        <Label className="flex items-center gap-2 text-white">
           <PlusCircle className="w-4 h-4 text-[#9b87f5]" />
           Additional Charges
         </Label>
@@ -35,14 +36,14 @@ export default function AdditionalCharges({
             placeholder="Description"
             value={charge.description}
             onChange={(e) => onChargeUpdate(charge.id, "description", e.target.value)}
-            className="flex-grow glass-card bg-transparent"
+            className="flex-grow glass-card !bg-transparent text-white"
           />
           <Input
             type="number"
             placeholder="Amount"
             value={charge.amount}
             onChange={(e) => onChargeUpdate(charge.id, "amount", e.target.value)}
-            className="w-32 glass-card bg-transparent"
+            className="w-32 glass-card !bg-transparent text-white"
             step="0.01"
           />
           <Button

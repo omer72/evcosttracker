@@ -55,7 +55,7 @@ export default function MeterReadings({
             type="number"
             value={lastReading}
             readOnly
-            className="mt-1 glass-card bg-transparent h-12 text-base opacity-50"
+            className="mt-1 glass-card !bg-transparent text-white h-12 text-base opacity-50"
           />
         </div>
       )}
@@ -70,7 +70,7 @@ export default function MeterReadings({
           type="number"
           value={currentReading}
           onChange={(e) => onCurrentReadingChange(Number(e.target.value))}
-          className="mt-1 glass-card bg-transparent h-12 text-base"
+          className="mt-1 glass-card !bg-transparent text-white h-12 text-base"
         />
       </div>
 
@@ -84,7 +84,7 @@ export default function MeterReadings({
           type="number"
           value={pricePerKwh}
           onChange={(e) => onPricePerKwhChange(Number(e.target.value))}
-          className="mt-1 glass-card bg-transparent h-12 text-base"
+          className="mt-1 glass-card !bg-transparent text-white h-12 text-base"
           step="0.01"
         />
       </div>
