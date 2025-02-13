@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -25,7 +26,7 @@ export default function MeterReadings({
     if (selectedCar) {
       fetchLastReading();
     }
-  }, [selectedCar, currentReading]); // Added currentReading as dependency
+  }, [selectedCar]);
 
   const fetchLastReading = async () => {
     const { data } = await supabase
@@ -46,7 +47,7 @@ export default function MeterReadings({
     <div className="space-y-4">
       {lastReading !== null && (
         <div>
-          <Label className="flex items-center gap-2">
+          <Label className="flex items-center gap-2 text-base sm:text-lg text-white">
             <Zap className="w-4 h-4 text-[#9b87f5]" />
             Last Meter Reading
           </Label>
@@ -54,13 +55,13 @@ export default function MeterReadings({
             type="number"
             value={lastReading}
             readOnly
-            className="mt-1 glass-card bg-transparent opacity-50"
+            className="mt-1 glass-card bg-transparent h-12 text-base opacity-50"
           />
         </div>
       )}
 
       <div>
-        <Label htmlFor="currentReading" className="flex items-center gap-2">
+        <Label htmlFor="currentReading" className="flex items-center gap-2 text-base sm:text-lg text-white">
           <Zap className="w-4 h-4 text-[#9b87f5]" />
           Current Meter Reading
         </Label>
@@ -69,12 +70,12 @@ export default function MeterReadings({
           type="number"
           value={currentReading}
           onChange={(e) => onCurrentReadingChange(Number(e.target.value))}
-          className="mt-1 glass-card bg-transparent"
+          className="mt-1 glass-card bg-transparent h-12 text-base"
         />
       </div>
 
       <div>
-        <Label htmlFor="pricePerKwh" className="flex items-center gap-2">
+        <Label htmlFor="pricePerKwh" className="flex items-center gap-2 text-base sm:text-lg text-white">
           <Zap className="w-4 h-4 text-[#9b87f5]" />
           Price per kWh (₪)
         </Label>
@@ -83,7 +84,7 @@ export default function MeterReadings({
           type="number"
           value={pricePerKwh}
           onChange={(e) => onPricePerKwhChange(Number(e.target.value))}
-          className="mt-1 glass-card bg-transparent"
+          className="mt-1 glass-card bg-transparent h-12 text-base"
           step="0.01"
         />
       </div>

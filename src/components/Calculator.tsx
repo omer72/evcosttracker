@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -173,54 +174,55 @@ export default function Calculator() {
   const selectedCarNumber = cars.find(car => car.id === selectedCar)?.car_number;
 
   return (
-    <>
-      <Card className="glass-card p-6 max-w-2xl mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <CalcIcon className="w-8 h-8 text-[#9b87f5]" />
-          <h2 className="text-2xl font-bold futuristic-gradient">
-            EV Charging Calculator App
-            {selectedCarNumber && (
-              <span className="text-sm ml-2 opacity-75">
-                (Car: {selectedCarNumber})
-              </span>
-            )}
-          </h2>
-        </div>
-        
-        <div className="space-y-4">
-          <CarSelector
-            selectedCar={selectedCar}
-            onCarSelect={setSelectedCar}
-            cars={cars}
-          />
+    <Card className="glass-card p-4 sm:p-6 max-w-2xl mx-auto">
+      <div className="flex items-center gap-3 mb-6">
+        <CalcIcon className="w-8 h-8 text-[#9b87f5]" />
+        <h2 className="text-xl sm:text-2xl font-bold futuristic-gradient">
+          EV Charging Calculator App
+          {selectedCarNumber && (
+            <span className="text-sm ml-2 opacity-75 block sm:inline">
+              (Car: {selectedCarNumber})
+            </span>
+          )}
+        </h2>
+      </div>
+      
+      <div className="space-y-6">
+        <CarSelector
+          selectedCar={selectedCar}
+          onCarSelect={setSelectedCar}
+          cars={cars}
+        />
 
-          <MeterReadings
-            selectedCar={selectedCar}
-            currentReading={currentReading}
-            onCurrentReadingChange={setCurrentReading}
-            pricePerKwh={pricePerKwh}
-            onPricePerKwhChange={setPricePerKwh}
-          />
+        <MeterReadings
+          selectedCar={selectedCar}
+          currentReading={currentReading}
+          onCurrentReadingChange={setCurrentReading}
+          pricePerKwh={pricePerKwh}
+          onPricePerKwhChange={setPricePerKwh}
+        />
 
-          <AdditionalCharges
-            charges={additionalCharges}
-            onChargeAdd={handleAddCharge}
-            onChargeRemove={handleRemoveCharge}
-            onChargeUpdate={handleChargeUpdate}
-          />
+        <AdditionalCharges
+          charges={additionalCharges}
+          onChargeAdd={handleAddCharge}
+          onChargeRemove={handleRemoveCharge}
+          onChargeUpdate={handleChargeUpdate}
+        />
 
-          <Button onClick={calculateCost} className="w-full bg-[#9b87f5] hover:bg-[#8B5CF6]">
-            <CalcIcon className="w-4 h-4 mr-2" />
-            Calculate Cost
-          </Button>
-        </div>
-      </Card>
+        <Button 
+          onClick={calculateCost} 
+          className="w-full bg-[#9b87f5] hover:bg-[#8B5CF6] text-base sm:text-lg py-3"
+        >
+          <CalcIcon className="w-4 h-4 mr-2" />
+          Calculate Cost
+        </Button>
+      </div>
 
       <CalculationResultDialog
         open={showResult}
         onOpenChange={handleCloseResult}
         result={calculationResult}
       />
-    </>
+    </Card>
   );
 }
