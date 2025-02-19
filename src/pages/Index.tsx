@@ -9,6 +9,7 @@ import { CircuitBoard, LogOut, Zap, Settings as SettingsIcon } from "lucide-reac
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Hero } from "@/components/blocks/hero";
+import { BackgroundCells } from "@/components/blocks/background-ripple-effect";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -72,25 +73,27 @@ const Index = () => {
 
   if (!isAuthenticated) {
     return (
-      <Hero
-        title="EV Cost Tracker"
-        subtitle="A web app for EV owners in shared buildings to track and manage charging costs. It automates session logging, calculates expenses, and generates Excel/PDF reports. Users can sign up, verify their email, register their vehicle, and import existing data. Simplify EV charging cost management with an easy-to-use platform. ⚡🚗"
-        actions={[
-          {
-            label: "Sign In",
-            href: "/login",
-            variant: "default"
-          },
-          {
-            label: "Sign Up",
-            href: "/login",
-            variant: "outline"
-          }
-        ]}
-        titleClassName="text-5xl md:text-6xl font-extrabold text-[#9b87f5]"
-        subtitleClassName="text-lg md:text-xl max-w-[800px]"
-        actionsClassName="mt-8"
-      />
+      <BackgroundCells className="bg-gradient-to-br from-[#1A1F2C] to-[#221F26]">
+        <Hero
+          title="EV Cost Tracker"
+          subtitle="A web app for EV owners in shared buildings to track and manage charging costs. It automates session logging, calculates expenses, and generates Excel/PDF reports. Users can sign up, verify their email, register their vehicle, and import existing data. Simplify EV charging cost management with an easy-to-use platform. ⚡🚗"
+          actions={[
+            {
+              label: "Sign In",
+              href: "/login",
+              variant: "default"
+            },
+            {
+              label: "Sign Up",
+              href: "/login",
+              variant: "outline"
+            }
+          ]}
+          titleClassName="text-5xl md:text-6xl font-extrabold text-[#9b87f5]"
+          subtitleClassName="text-lg md:text-xl max-w-[800px]"
+          actionsClassName="mt-8"
+        />
+      </BackgroundCells>
     );
   }
 
