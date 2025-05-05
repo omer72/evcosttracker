@@ -9,42 +9,121 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      charging_costs: {
+      additional_charges: {
         Row: {
-          cost_per_kwh: number
-          updated_at: string
-          user_id: string
+          amount: number
+          charging_history_id: string | null
+          description: string
+          id: string
         }
         Insert: {
-          cost_per_kwh: number
-          updated_at?: string
-          user_id: string
+          amount: number
+          charging_history_id?: string | null
+          description: string
+          id?: string
         }
         Update: {
-          cost_per_kwh?: number
-          updated_at?: string
-          user_id?: string
+          amount?: number
+          charging_history_id?: string | null
+          description?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "additional_charges_charging_history_id_fkey"
+            columns: ["charging_history_id"]
+            isOneToOne: false
+            referencedRelation: "charging_history"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cars: {
+        Row: {
+          car_number: string
+          created_at: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          car_number: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          car_number?: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
-      vehicles: {
+      charging_history: {
+        Row: {
+          car_id: string | null
+          created_at: string
+          current_reading: number
+          date: string
+          id: string
+          previous_reading: number
+          price_per_kwh: number
+          total_amount: number
+          user_id: string | null
+        }
+        Insert: {
+          car_id?: string | null
+          created_at?: string
+          current_reading: number
+          date?: string
+          id?: string
+          previous_reading: number
+          price_per_kwh: number
+          total_amount: number
+          user_id?: string | null
+        }
+        Update: {
+          car_id?: string | null
+          created_at?: string
+          current_reading?: number
+          date?: string
+          id?: string
+          previous_reading?: number
+          price_per_kwh?: number
+          total_amount?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "charging_history_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
         Row: {
           created_at: string
           id: string
-          name: string
-          user_id: string
+          is_admin: boolean | null
+          updated_at: string
+          username: string | null
         }
         Insert: {
           created_at?: string
-          id?: string
-          name: string
-          user_id: string
+          id: string
+          is_admin?: boolean | null
+          updated_at?: string
+          username?: string | null
         }
         Update: {
           created_at?: string
           id?: string
-          name?: string
-          user_id?: string
+          is_admin?: boolean | null
+          updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
