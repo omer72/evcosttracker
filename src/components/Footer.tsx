@@ -8,7 +8,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="w-full py-3 px-4 border-t border-white/10 mt-auto">
+    <footer className="w-full py-4 px-4 border-t border-white/10 mt-auto bg-[#1A1F2C]/80 backdrop-blur-sm">
       <div className="max-w-4xl mx-auto flex justify-center items-center gap-2 text-sm text-white/70">
         <span>Created by Omer Etrog,</span>
         <Button 
