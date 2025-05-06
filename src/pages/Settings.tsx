@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,7 +109,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className="flex-1 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <Card className="glass-card p-6">
           <div className="flex items-center justify-between mb-6">
@@ -184,4 +185,4 @@ export default function Settings() {
       </AlertDialog>
     </div>
   );
-}
+};

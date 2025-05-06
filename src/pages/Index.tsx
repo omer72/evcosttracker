@@ -95,7 +95,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen py-4 px-2 sm:py-8 sm:px-4">
+    <div className="flex-1 py-4 px-2 sm:py-8 sm:px-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-4xl font-bold flex items-center gap-2 sm:gap-3">

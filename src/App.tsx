@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Settings from "./pages/Settings";
+import Footer from "./components/Footer";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return children;
 };
 
+const PageLayout = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex flex-col min-h-screen">
+    {children}
+    <Footer />
+  </div>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -47,21 +56,32 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={
+              <PageLayout>
+                <Login />
+              </PageLayout>
+            }
+          />
           <Route
             path="/"
             element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
+              <PageLayout>
+                <ProtectedRoute>
+                  <Index />
+                </ProtectedRoute>
+              </PageLayout>
             }
           />
           <Route
             path="/settings"
             element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
+              <PageLayout>
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              </PageLayout>
             }
           />
         </Routes>
