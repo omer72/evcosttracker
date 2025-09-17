@@ -149,7 +149,7 @@ const Login = () => {
                 input: 'glass-card bg-transparent'
               }
             }}
-            providers={[]}
+            providers={['google']}
             theme="dark"
             localization={{
               variables: {
