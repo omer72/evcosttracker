@@ -6,6 +6,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface DailyData {
   day: string;
@@ -14,6 +15,7 @@ interface DailyData {
 
 export default function YearlyChart() {
   const [monthlyData, setMonthlyData] = useState<DailyData[]>([]);
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     fetchMonthlyData();
@@ -23,7 +25,6 @@ export default function YearlyChart() {
     const { data: session } = await supabase.auth.getSession();
     if (!session.session) return;
 
-    // Get the start and end of the current month
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -46,7 +47,6 @@ export default function YearlyChart() {
       return acc;
     }, {});
 
-    // Create an array for all days in the month
     const daysInMonth = endOfMonth.getDate();
     const formattedData = Array.from({ length: daysInMonth }, (_, i) => {
       const day = (i + 1).toString();
@@ -68,11 +68,11 @@ export default function YearlyChart() {
     },
   };
 
-  const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+  const currentMonth = new Date().toLocaleString(language === "he" ? "he-IL" : "en-US", { month: 'long' });
 
   return (
     <div className="rounded-lg border bg-card p-6 shadow-sm">
-      <h3 className="font-semibold mb-4">{currentMonth} Overview</h3>
+      <h3 className="font-semibold mb-4">{currentMonth} {t("overview")}</h3>
       <div className="h-[300px]">
         <ChartContainer config={chartConfig}>
           <ResponsiveContainer width="100%" height="100%">

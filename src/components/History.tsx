@@ -6,9 +6,11 @@ import { History as HistoryIcon } from "lucide-react";
 import ExportButtons from "./history/ExportButtons";
 import YearlyChart from "./history/YearlyChart";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function History() {
   const [readings, setReadings] = useState<any[]>([]);
+  const { t } = useLanguage();
   
   useEffect(() => {
     fetchReadings();
@@ -41,7 +43,7 @@ export default function History() {
     if (!file) return;
 
     const text = await file.text();
-    const rows = text.split('\n').slice(1); // Skip header row
+    const rows = text.split('\n').slice(1);
     
     const { data: session } = await supabase.auth.getSession();
     if (!session.session) {
@@ -55,7 +57,6 @@ export default function History() {
         throw new Error('Invalid CSV format. Please make sure all columns are present: Date, Car Number, Current Reading, Previous Reading, Price per kWh, Total Amount');
       }
 
-      // Find car by number
       const { data: cars, error: carError } = await supabase
         .from('cars')
         .select('id')
@@ -92,7 +93,7 @@ export default function History() {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
           <HistoryIcon className="w-8 h-8 text-[#9b87f5]" />
-          <h2 className="text-2xl font-bold futuristic-gradient">Charging History</h2>
+          <h2 className="text-2xl font-bold futuristic-gradient">{t("chargingHistory")}</h2>
         </div>
 
         <ExportButtons readings={readings} onImport={handleImport} />

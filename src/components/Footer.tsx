@@ -1,8 +1,11 @@
 
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const Footer = () => {
+  const { t } = useLanguage();
+
   const handleEmailClick = () => {
     window.location.href = "mailto:omer72@gmail.com?subject=From%20EV%20Cost%20Tracker";
   };
@@ -10,7 +13,7 @@ const Footer = () => {
   return (
     <footer className="w-full py-4 px-4 border-t border-white/10 mt-auto bg-[#1A1F2C]/80 backdrop-blur-sm">
       <div className="max-w-4xl mx-auto flex justify-center items-center gap-2 text-sm text-white/70">
-        <span>Created by Omer Etrog,</span>
+        <span>{t("createdBy")}</span>
         <Button 
           variant="link" 
           onClick={handleEmailClick} 

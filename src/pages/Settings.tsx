@@ -17,12 +17,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useLanguage } from "@/i18n/LanguageContext";
+import LanguageToggle from "@/components/LanguageToggle";
 
 export default function Settings() {
   const [cars, setCars] = useState<Array<{ id: string; car_number: string }>>([]);
   const [newCarNumber, setNewCarNumber] = useState("");
   const [carToDelete, setCarToDelete] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkUser();
@@ -48,7 +51,7 @@ export default function Settings() {
       .order("created_at", { ascending: true });
 
     if (error) {
-      toast.error("Error fetching cars");
+      toast.error(t("errorFetchingCars"));
       console.error("Error fetching cars:", error);
       return;
     }
@@ -58,13 +61,13 @@ export default function Settings() {
 
   const addCar = async () => {
     if (!newCarNumber.trim()) {
-      toast.error("Please enter a car number");
+      toast.error(t("enterCarNumberError"));
       return;
     }
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      toast.error("Please login to add cars");
+      toast.error(t("pleaseLogin"));
       navigate("/login");
       return;
     }
@@ -77,12 +80,12 @@ export default function Settings() {
       }]);
 
     if (error) {
-      toast.error("Error adding car");
+      toast.error(t("errorAddingCar"));
       console.error("Error adding car:", error);
       return;
     }
 
-    toast.success("Car added successfully");
+    toast.success(t("carAdded"));
     setNewCarNumber("");
     fetchCars();
   };
@@ -98,12 +101,12 @@ export default function Settings() {
       .eq("user_id", session.user.id);
 
     if (error) {
-      toast.error("Error deleting car");
+      toast.error(t("errorDeletingCar"));
       console.error("Error deleting car:", error);
       return;
     }
 
-    toast.success("Car and associated history deleted successfully");
+    toast.success(t("carDeleted"));
     setCarToDelete(null);
     fetchCars();
   };
@@ -115,28 +118,31 @@ export default function Settings() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <Car className="w-8 h-8 text-[#9b87f5]" />
-              <h2 className="text-2xl font-bold futuristic-gradient">Car Management</h2>
+              <h2 className="text-2xl font-bold futuristic-gradient">{t("carManagement")}</h2>
             </div>
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/")}
-              className="hover:bg-white/10"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
+            <div className="flex gap-2">
+              <LanguageToggle />
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/")}
+                className="hover:bg-white/10"
+              >
+                <ArrowLeft className="w-4 h-4 me-2" />
+                {t("back")}
+              </Button>
+            </div>
           </div>
 
           <div className="flex gap-2 mb-6">
             <Input
-              placeholder="Enter car number"
+              placeholder={t("enterCarNumber")}
               value={newCarNumber}
               onChange={(e) => setNewCarNumber(e.target.value)}
               className="glass-card bg-transparent"
             />
             <Button onClick={addCar} className="bg-[#9b87f5] hover:bg-[#8B5CF6]">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Car
+              <Plus className="w-4 h-4 me-2" />
+              {t("addCar")}
             </Button>
           </div>
 
@@ -167,18 +173,18 @@ export default function Settings() {
       <AlertDialog open={!!carToDelete} onOpenChange={() => setCarToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the car and all its associated charging history.
+              {t("deleteConfirmCar")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => carToDelete && deleteCar(carToDelete)}
               className="bg-red-500 hover:bg-red-600"
             >
-              Delete
+              {t("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
