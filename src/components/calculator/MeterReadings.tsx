@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface MeterReadingsProps {
   selectedCar: string;
@@ -21,6 +22,7 @@ export default function MeterReadings({
   onPricePerKwhChange
 }: MeterReadingsProps) {
   const [lastReading, setLastReading] = useState<number | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (selectedCar) {
@@ -49,7 +51,7 @@ export default function MeterReadings({
         <div>
           <Label className="flex items-center gap-2 text-base sm:text-lg text-white">
             <Zap className="w-4 h-4 text-[#9b87f5]" />
-            Last Meter Reading
+            {t("lastMeterReading")}
           </Label>
           <Input
             type="number"
@@ -63,7 +65,7 @@ export default function MeterReadings({
       <div>
         <Label htmlFor="currentReading" className="flex items-center gap-2 text-base sm:text-lg text-white">
           <Zap className="w-4 h-4 text-[#9b87f5]" />
-          Current Meter Reading
+          {t("currentMeterReading")}
         </Label>
         <Input
           id="currentReading"
@@ -77,7 +79,7 @@ export default function MeterReadings({
       <div>
         <Label htmlFor="pricePerKwh" className="flex items-center gap-2 text-base sm:text-lg text-white">
           <Zap className="w-4 h-4 text-[#9b87f5]" />
-          Price per kWh (₪)
+          {t("pricePerKwh")}
         </Label>
         <Input
           id="pricePerKwh"

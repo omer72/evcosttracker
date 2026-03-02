@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface EditHistoryDialogProps {
   reading: any;
@@ -16,6 +17,7 @@ export default function EditHistoryDialog({ reading, onClose, onUpdate }: EditHi
   const [currentReading, setCurrentReading] = useState("");
   const [pricePerKwh, setPricePerKwh] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (reading) {
@@ -47,11 +49,11 @@ export default function EditHistoryDialog({ reading, onClose, onUpdate }: EditHi
       .eq("id", reading.id);
 
     if (error) {
-      toast.error("Error updating reading");
+      toast.error(t("errorUpdating"));
       return;
     }
 
-    toast.success("Reading updated successfully");
+    toast.success(t("updatedSuccess"));
     onUpdate();
     handleClose();
   };
@@ -65,11 +67,11 @@ export default function EditHistoryDialog({ reading, onClose, onUpdate }: EditHi
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Reading</DialogTitle>
+          <DialogTitle>{t("editReading")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentReading">Current Reading</Label>
+            <Label htmlFor="currentReading">{t("currentReading")}</Label>
             <Input
               id="currentReading"
               value={currentReading}
@@ -80,7 +82,7 @@ export default function EditHistoryDialog({ reading, onClose, onUpdate }: EditHi
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="pricePerKwh">Price per kWh</Label>
+            <Label htmlFor="pricePerKwh">{t("pricePerKwh")}</Label>
             <Input
               id="pricePerKwh"
               value={pricePerKwh}
@@ -92,9 +94,9 @@ export default function EditHistoryDialog({ reading, onClose, onUpdate }: EditHi
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={handleClose}>
-              Cancel
+              {t("cancel")}
             </Button>
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit">{t("save")}</Button>
           </div>
         </form>
       </DialogContent>

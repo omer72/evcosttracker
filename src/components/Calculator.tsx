@@ -12,6 +12,7 @@ import MeterReadings from "./calculator/MeterReadings";
 import AdditionalCharges from "./calculator/AdditionalCharges";
 import { useNavigate } from "react-router-dom";
 import CalculationResultDialog from "./calculator/CalculationResultDialog";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Calculator() {
   const [currentReading, setCurrentReading] = useState<number>(0);
@@ -27,6 +28,7 @@ export default function Calculator() {
     basicCost: number;
     additionalCost: number;
   } | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkUserAndFetchCars();
@@ -44,7 +46,7 @@ export default function Calculator() {
   const fetchCars = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      toast.error("Please login to view cars");
+      toast.error(t("pleaseLogin"));
       return;
     }
 
@@ -55,7 +57,7 @@ export default function Calculator() {
       .order("created_at", { ascending: true });
 
     if (error) {
-      toast.error("Error fetching cars");
+      toast.error(t("errorFetchingCars"));
       return;
     }
 
@@ -89,12 +91,12 @@ export default function Calculator() {
   const calculateCost = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      toast.error("Please login to calculate cost");
+      toast.error(t("pleaseLogin"));
       return;
     }
 
     if (!selectedCar) {
-      toast.error("Please select a car");
+      toast.error(t("pleaseSelectCar"));
       return;
     }
 
@@ -109,7 +111,7 @@ export default function Calculator() {
     const previousReading = previousReadings && previousReadings[0] ? previousReadings[0].current_reading : 0;
     
     if (currentReading < previousReading) {
-      toast.error("Current reading cannot be less than previous reading");
+      toast.error(t("readingError"));
       return;
     }
 
@@ -140,7 +142,7 @@ export default function Calculator() {
       .single();
 
     if (historyError) {
-      toast.error("Error saving charging history");
+      toast.error(t("errorSavingHistory"));
       return;
     }
 
@@ -156,12 +158,11 @@ export default function Calculator() {
         );
 
       if (chargesError) {
-        toast.error("Error saving additional charges");
+        toast.error(t("errorSavingCharges"));
         return;
       }
     }
     
-    // Reset form and refresh meter readings
     setAdditionalCharges([]);
     setCurrentReading(0);
   };
@@ -178,10 +179,10 @@ export default function Calculator() {
       <div className="flex items-center gap-3 mb-6">
         <CalcIcon className="w-8 h-8 text-[#9b87f5]" />
         <h2 className="text-xl sm:text-2xl font-bold futuristic-gradient">
-          EV Charging Calculator App
+          {t("calcTitle")}
           {selectedCarNumber && (
-            <span className="text-sm ml-2 opacity-75 block sm:inline">
-              (Car: {selectedCarNumber})
+            <span className="text-sm ms-2 opacity-75 block sm:inline">
+              ({t("car")}: {selectedCarNumber})
             </span>
           )}
         </h2>
@@ -213,8 +214,8 @@ export default function Calculator() {
           onClick={calculateCost} 
           className="w-full bg-[#9b87f5] hover:bg-[#8B5CF6] text-base sm:text-lg py-3"
         >
-          <CalcIcon className="w-4 h-4 mr-2" />
-          Calculate Cost
+          <CalcIcon className="w-4 h-4 me-2" />
+          {t("calculateCost")}
         </Button>
       </div>
 

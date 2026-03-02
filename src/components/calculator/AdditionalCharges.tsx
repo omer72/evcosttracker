@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, X, PlusCircle } from "lucide-react";
 import { AdditionalCharge } from "@/types/calculator";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface AdditionalChargesProps {
   charges: AdditionalCharge[];
@@ -18,29 +19,31 @@ export default function AdditionalCharges({
   onChargeRemove,
   onChargeUpdate
 }: AdditionalChargesProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
         <Label className="flex items-center gap-2 text-white">
           <PlusCircle className="w-4 h-4 text-[#9b87f5]" />
-          Additional Charges
+          {t("additionalCharges")}
         </Label>
         <Button onClick={onChargeAdd} variant="outline" size="sm" className="glass-card hover:bg-white/20">
-          <Plus className="w-4 h-4 mr-1" /> Add Charge
+          <Plus className="w-4 h-4 me-1" /> {t("addCharge")}
         </Button>
       </div>
 
       {charges.map((charge) => (
         <div key={charge.id} className="flex gap-2 items-start">
           <Input
-            placeholder="Description"
+            placeholder={t("description")}
             value={charge.description}
             onChange={(e) => onChargeUpdate(charge.id, "description", e.target.value)}
             className="flex-grow glass-card !bg-transparent text-white"
           />
           <Input
             type="number"
-            placeholder="Amount"
+            placeholder={t("amount")}
             value={charge.amount}
             onChange={(e) => onChargeUpdate(charge.id, "amount", e.target.value)}
             className="w-32 glass-card !bg-transparent text-white"

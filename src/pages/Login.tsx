@@ -6,15 +6,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Alert } from "@/components/ui/alert";
+import { useLanguage } from "@/i18n/LanguageContext";
+import LanguageToggle from "@/components/LanguageToggle";
 
 const Login = () => {
   const navigate = useNavigate();
   const [connectionError, setConnectionError] = useState(false);
   const [isConnectionDialogOpen, setIsConnectionDialogOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
-    // Test the connection to Supabase
     const testConnection = async () => {
       try {
         const { error } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
@@ -42,7 +43,6 @@ const Login = () => {
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
           if (session) {
             try {
-              // Check if user has a profile
               const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
@@ -51,7 +51,7 @@ const Login = () => {
 
               if (profileError) {
                 console.error("Error checking profile:", profileError);
-                toast.error("Error during sign in. Please try again.");
+                toast.error(t("signInError"));
                 return;
               }
 
@@ -63,16 +63,16 @@ const Login = () => {
 
                 if (insertError) {
                   console.error("Error creating profile:", insertError);
-                  toast.error("Error during sign up. Please try again.");
+                  toast.error(t("signUpError"));
                   return;
                 }
               }
 
-              toast.success("Successfully signed in!");
+              toast.success(t("signInSuccess"));
               navigate("/");
             } catch (error) {
               console.error("Error during sign in process:", error);
-              toast.error("Connection error. Please try again later.");
+              toast.error(t("connectionErrorRetry"));
             }
           }
         }
@@ -99,24 +99,27 @@ const Login = () => {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
+      <div className="absolute top-4 end-4">
+        <LanguageToggle />
+      </div>
       <div className="max-w-md w-full space-y-8 glass-card p-8 rounded-lg">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            EV Charging Cost Calculator
+            {t("loginTitle")}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-300">
-            Please sign in to continue
+            {t("loginSubtitle")}
           </p>
         </div>
         
         {connectionError ? (
           <div className="text-center space-y-4">
             <div className="text-red-400 p-4 rounded-md bg-red-900/20 border border-red-800">
-              Unable to connect to authentication service. Please check your internet connection and try again.
+              {t("connectionError")}
             </div>
             <Button onClick={() => window.location.reload()} className="w-full">
-              Retry Connection
+              {t("retryConnection")}
             </Button>
           </div>
         ) : (
@@ -156,14 +159,14 @@ const Login = () => {
                 sign_up: {
                   email_label: 'Email',
                   password_label: 'Password',
-                  button_label: 'Sign up',
-                  link_text: "Don't have an account? Sign up",
+                  button_label: t("signUp"),
+                  link_text: t("signUp"),
                 },
                 sign_in: {
                   email_label: 'Email',
                   password_label: 'Password',
-                  button_label: 'Sign in',
-                  link_text: "Have an account? Sign in",
+                  button_label: t("signIn"),
+                  link_text: t("signIn"),
                 },
                 forgotten_password: {
                   link_text: "Forgot your password?",
@@ -178,19 +181,19 @@ const Login = () => {
       <Dialog open={isConnectionDialogOpen} onOpenChange={setIsConnectionDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Connection Issue Detected</DialogTitle>
+            <DialogTitle>{t("connectionIssue")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p>There seems to be an issue connecting to the Supabase authentication service.</p>
-            <p>Possible solutions:</p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Check your internet connection</li>
-              <li>Verify that your Supabase project is active</li>
-              <li>Make sure your project's URL and API key are correct</li>
-              <li>Try clearing your browser cache</li>
+            <p>{t("connectionIssueDesc")}</p>
+            <p>{t("possibleSolutions")}</p>
+            <ul className="list-disc ps-5 space-y-1">
+              <li>{t("checkInternet")}</li>
+              <li>{t("verifyProject")}</li>
+              <li>{t("checkCredentials")}</li>
+              <li>{t("clearCache")}</li>
             </ul>
             <div className="flex justify-end space-x-2">
-              <Button onClick={retryConnection}>Retry Connection</Button>
+              <Button onClick={retryConnection}>{t("retryConnection")}</Button>
             </div>
           </div>
         </DialogContent>

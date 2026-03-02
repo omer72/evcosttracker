@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dialog";
 import { NumberFlow } from "@/components/ui/number-flow";
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface CalculationResultDialogProps {
   open: boolean;
@@ -24,10 +25,10 @@ export default function CalculationResultDialog({
   result
 }: CalculationResultDialogProps) {
   const [displayedResult, setDisplayedResult] = useState<typeof result>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (open && result) {
-      // First set all values to 0
       setDisplayedResult({
         totalAmount: 0,
         consumption: 0,
@@ -35,7 +36,6 @@ export default function CalculationResultDialog({
         additionalCost: 0
       });
 
-      // Then after a short delay, set the actual values
       const timer = setTimeout(() => {
         setDisplayedResult(result);
       }, 100);
@@ -48,7 +48,7 @@ export default function CalculationResultDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center">Calculation Result</DialogTitle>
+          <DialogTitle className="text-center">{t("calculationResult")}</DialogTitle>
         </DialogHeader>
         {displayedResult && (
           <div className="space-y-4 py-4">
@@ -57,19 +57,19 @@ export default function CalculationResultDialog({
                 <span>₪</span>
                 <NumberFlow value={displayedResult.totalAmount} />
               </div>
-              <div className="text-sm text-muted-foreground">Total Amount</div>
+              <div className="text-sm text-muted-foreground">{t("totalAmount")}</div>
             </div>
             
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="space-y-1">
-                <div className="font-medium">Consumption</div>
+                <div className="font-medium">{t("consumption")}</div>
                 <div className="text-muted-foreground flex items-center gap-0.5">
                   <NumberFlow value={displayedResult.consumption} />
                   <span>kWh</span>
                 </div>
               </div>
               <div className="space-y-1">
-                <div className="font-medium">Basic Cost</div>
+                <div className="font-medium">{t("basicCost")}</div>
                 <div className="text-muted-foreground flex items-center gap-0.5">
                   <span>₪</span>
                   <NumberFlow value={displayedResult.basicCost} />
@@ -78,7 +78,7 @@ export default function CalculationResultDialog({
               {displayedResult.additionalCost > 0 && (
                 <>
                   <div className="space-y-1">
-                    <div className="font-medium">Additional Charges</div>
+                    <div className="font-medium">{t("additionalCost")}</div>
                     <div className="text-muted-foreground flex items-center gap-0.5">
                       <span>₪</span>
                       <NumberFlow value={displayedResult.additionalCost} />

@@ -13,6 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface ExportButtonsProps {
   readings: any[];
@@ -22,6 +23,7 @@ interface ExportButtonsProps {
 export default function ExportButtons({ readings, onImport }: ExportButtonsProps) {
   const [isImporting, setIsImporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -30,7 +32,7 @@ export default function ExportButtons({ readings, onImport }: ExportButtonsProps
     setIsImporting(true);
     try {
       await onImport(event);
-      toast.success('Import completed successfully');
+      toast.success(t("importSuccess"));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to import CSV file');
     } finally {
@@ -104,11 +106,11 @@ export default function ExportButtons({ readings, onImport }: ExportButtonsProps
           disabled={isImporting}
         >
           {isImporting ? (
-            <div className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 me-1 sm:me-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
           ) : (
-            <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <Upload className="w-3 h-3 sm:w-4 sm:h-4 me-1 sm:me-2" />
           )}
-          <span className="hidden sm:inline">{isImporting ? 'Importing...' : 'Import'}</span>
+          <span className="hidden sm:inline">{isImporting ? t("importing") : t("import")}</span>
           <span className="sm:hidden">CSV</span>
         </Button>
         <input
@@ -124,8 +126,8 @@ export default function ExportButtons({ readings, onImport }: ExportButtonsProps
           onClick={exportToCSV}
           className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
         >
-          <FileDown className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-          <span className="hidden sm:inline">Export</span>
+          <FileDown className="w-3 h-3 sm:w-4 sm:h-4 me-1 sm:me-2" />
+          <span className="hidden sm:inline">{t("export")}</span>
           <span className="sm:hidden">CSV</span>
         </Button>
         <Button
@@ -133,8 +135,8 @@ export default function ExportButtons({ readings, onImport }: ExportButtonsProps
           onClick={exportToPDF}
           className="glass-card hover:bg-white/20 text-xs sm:text-sm h-8 px-2 sm:px-4"
         >
-          <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-          <span className="hidden sm:inline">Export</span>
+          <Download className="w-3 h-3 sm:w-4 sm:h-4 me-1 sm:me-2" />
+          <span className="hidden sm:inline">{t("export")}</span>
           <span className="sm:hidden">PDF</span>
         </Button>
       </div>
@@ -142,13 +144,13 @@ export default function ExportButtons({ readings, onImport }: ExportButtonsProps
       <AlertDialog open={!!error} onOpenChange={() => setError(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Import Error</AlertDialogTitle>
+            <AlertDialogTitle>{t("importError")}</AlertDialogTitle>
             <AlertDialogDescription>
               {error}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setError(null)}>OK</AlertDialogAction>
+            <AlertDialogAction onClick={() => setError(null)}>{t("ok")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

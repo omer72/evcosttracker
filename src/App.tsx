@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { LanguageProvider } from "@/i18n/LanguageContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Settings from "./pages/Settings";
@@ -51,42 +52,44 @@ const PageLayout = ({ children }: { children: React.ReactNode }) => (
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/login"
-            element={
-              <PageLayout>
-                <Login />
-              </PageLayout>
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <PageLayout>
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              </PageLayout>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <PageLayout>
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              </PageLayout>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <LanguageProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                <PageLayout>
+                  <Login />
+                </PageLayout>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <PageLayout>
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                </PageLayout>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <PageLayout>
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                </PageLayout>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 
