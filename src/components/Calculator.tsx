@@ -15,7 +15,7 @@ import CalculationResultDialog from "./calculator/CalculationResultDialog";
 
 export default function Calculator() {
   const [currentReading, setCurrentReading] = useState<number>(0);
-  const [pricePerKwh, setPricePerKwh] = useState<number>(0.6402);
+  const [pricePerKwh, setPricePerKwh] = useState<number>(0.643218);
   const [additionalCharges, setAdditionalCharges] = useState<AdditionalCharge[]>([]);
   const [selectedCar, setSelectedCar] = useState<string>("");
   const [cars, setCars] = useState<Array<{ id: string; car_number: string }>>([]);
