@@ -56,7 +56,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename="/evcosttracker">
           <Routes>
             <Route
               path="/login"
